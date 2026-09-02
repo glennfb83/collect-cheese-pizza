@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collect Cheese Pizza</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            background: #ddd;
+            border-radius: 10px;
+            height: 30px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 2px solid #667eea;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+            min-height: 300px;
+        }
+
+        .pizza-tile {
+            background: #ffd700;
+            border: 3px solid #ffa500;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            font-size: 3em;
+            transition: transform 0.2s, box-shadow 0.2s;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+        }
+
+        .pizza-tile:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 165, 0, 0.4);
+        }
+
+        .pizza-tile:active {
+            transform: scale(0.95);
+        }
+
+        .empty-tile {
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            min-height: 100px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .message {
+            font-size: 1.2em;
+            margin: 20px 0;
+            min-height: 30px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            color: #4caf50;
+        }
+
+        .message.warning {
+            color: #ff9800;
+        }
+
+        .message.info {
+            color: #2196f3;
+        }
+
+        .game-over {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            font-size: 1.3em;
+            margin: 20px 0;
+        }
+
+        .emoji-pop {
+            position: fixed;
+            font-size: 2em;
+            pointer-events: none;
+            animation: pop-up 1s ease-out forwards;
+        }
+
+        @keyframes pop-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(0.5);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍕 Collect Cheese Pizza 🍕</h1>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-label">Total Collected</div>
+                <div class="stat-value"><span id="totalTB">0</span> TB</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Goal</div>
+                <div class="stat-value">10 TB</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Pizzas Caught</div>
+                <div class="stat-value"><span id="pizzasCount">0</span></div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+        </div>
+
+        <div id="gameBoard" class="game-board"></div>
+
+        <div class="message" id="message"></div>
+
+        <div id="gameOverScreen" class="game-over" style="display: none;">
+            🎉 You Win! 🎉<br>
+            You collected 10 TB of delicious cheese pizza!
+        </div>
+
+        <div class="button-group">
+            <button onclick="game.collectPizza()">🍕 Click for Pizza!</button>
+            <button class="reset-btn" onclick="game.reset()">Reset Game</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
